@@ -1,0 +1,6 @@
+-q --pre pytorch-ignite==0.5.0.dev20230325
+-q fastbook==0.0.29
+--upgrade -q mxnet==1.9.1
+-q autogluon==0.7.0
+-q pythainlp==3.1.1
+-q transformers==4.27.3
