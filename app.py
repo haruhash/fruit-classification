@@ -1,8 +1,12 @@
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import streamlit as st
 import pandas as pd
 import numpy as np
 import pickle
 from PIL import Image
+
+device = torch.device('cuda' if torch.cuda.is_avaliable() else 'cpu')
 
 def main():
 	pickle_in = open('fruit.pkl', 'rb')
