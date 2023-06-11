@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import pickle
 from PIL import Image
+import torch
 
 device = torch.device('cuda' if torch.cuda.is_avaliable() else 'cpu')
 
