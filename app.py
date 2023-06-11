@@ -7,7 +7,8 @@ import pickle
 from PIL import Image
 import torch
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+map_location = torch.device('cpu')
+torch.load(map_location)
 
 def main():
 	pickle_in = open('fruit.pkl', 'rb')
