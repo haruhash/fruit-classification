@@ -7,7 +7,7 @@ import pickle
 from PIL import Image
 import torch
 
-n = torch.load(map_location = 'cpu')
+n = torch.load('tensors.pt', map_location = 'cpu')
 
 def main():
 	pickle_in = open('fruit.pkl', 'rb')
