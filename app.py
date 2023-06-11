@@ -1,6 +1,6 @@
 from fastai.vision.all import (
-	load_learner,
-	PILImage,
+    load_learner,
+    PILImage,
 )
 import streamlit as st
 import pandas as pd
@@ -33,19 +33,19 @@ urllib.request.urlretrieve(MODEL_URL, "fruit.pkl")
 learn_inf = load_learner('fruit.pkl')
 
 def predict(learn, img):
-	pred, pred_idx, pred_prob = learn.predict(img)
-	if pred == '00':
-		return "00", pred_prob[pred_idx]*100
-	elif pred == '01':
-		return "01", pred_prob[pred_idx]*100
-	elif pred == '02':
-		return "02", pred_prob[pred_idx]*100
-	elif pred == '03':
-		return "03", pred_prob[pred_idx]*100
-	elif pred == '04':
-		return "04", pred_prob[pred_idx]*100
-	elif pred == '05':
-		return "05", pred_prob[pred_idx]*100
+    pred, pred_idx, pred_prob = learn.predict(img)
+    if pred == '00':
+        return "00", pred_prob[pred_idx]*100
+    elif pred == '01':
+        return "01", pred_prob[pred_idx]*100
+    elif pred == '02':
+        return "02", pred_prob[pred_idx]*100
+    elif pred == '03':
+        return "03", pred_prob[pred_idx]*100
+    elif pred == '04':
+        return "04", pred_prob[pred_idx]*100
+    elif pred == '05':
+        return "05", pred_prob[pred_idx]*100
 
 def segment():
     global output_image,mp_model,bg_image
@@ -137,9 +137,9 @@ def segment():
                 output_placeholder.warning(f"Others")
 
 def main():
-	st.sidebar.header("Fruit Classification")
-	st.title("Fruit Classification")
-	while True:
+    st.sidebar.header("Fruit Classification")
+    st.title("Fruit Classification")
+    while True:
         segment()
         
 if __name__ == '__main__':
