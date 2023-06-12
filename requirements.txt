@@ -1,11 +1,8 @@
 requests
 beautifulsoup4
 streamlit
-numpy>=2.7
+numpy
 Pillow
 flask
 keras~=2.6.0
 tensorflow~=2.6.0
-typing-extensions>=4.0.0
-six~=1.15.0
-click>=8.1.3
