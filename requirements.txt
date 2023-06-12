@@ -6,4 +6,4 @@ Pillow
 flask
 keras~=2.6.0
 tensorflow~=2.6.0
-typing-extensions
+typing-extensions>=4.0.0
