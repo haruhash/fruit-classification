@@ -1,7 +1,7 @@
 requests
 beautifulsoup4
 streamlit
-numpy~=1.19.2
+numpy>=2.7
 Pillow
 flask
 keras~=2.6.0
