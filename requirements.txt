@@ -1,6 +1,8 @@
-numpy==1.19.2
-pandas==1.1.2
-plotly==4.11.0
-plotly-express==0.4.1
-streamlit==0.67.0
-matplotlib==3.3.2
+requests
+beautifulsoup4
+streamlit
+numpy
+Pillow
+flask
+keras~=2.6.0
+tensorflow~=2.6.0
