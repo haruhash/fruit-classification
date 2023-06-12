@@ -1,89 +1,60 @@
-import numpy as np
-import streamlit as st
-import time
-from PIL import Image
-from keras.preprocessing import image
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Flatten, Conv2D, MaxPooling2D, Dropout
-from tensorflow.keras.losses import sparse_categorical_crossentropy
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from fruit_classifier_knn import run_knn
+from fruit_classifier_svm import run_svm
 
-train = 'train'
-# Create a generator
-train_datagen = ImageDataGenerator(
-  rescale=1./255
-)
-train_datagen = train_datagen.flow_from_directory(
-        train,
-        batch_size=32,
-        target_size=(300, 300),
-        class_mode='sparse')
+import tkinter as tk
+import matplotlib.pyplot as plt
+import matplotlib
 
-labels = train_datagen.class_indices
-Labels = '\n'.join(sorted(train_datagen.class_indices.keys()))
-with open('Labels.txt', 'w') as file:
-  file.write(Labels)
-class_names = list(labels.keys())
+from random import seed
+from random import randint
 
-model=Sequential()
-#Convolution blocks
-model.add(Conv2D(32, kernel_size = (3,3), padding='same',input_shape=(300,300,3),activation='relu'))
-model.add(MaxPooling2D(pool_size=2)) 
-model.add(Conv2D(64, kernel_size = (3,3), padding='same',activation='relu'))
-model.add(MaxPooling2D(pool_size=2)) 
-model.add(Conv2D(32, kernel_size = (3,3), padding='same',activation='relu'))
-model.add(MaxPooling2D(pool_size=2)) 
-#Classification layers
-model.add(Flatten())
-model.add(Dense(64,activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(32,activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(6,activation='softmax'))
-model.compile(optimizer = 'Adam', loss = 'sparse_categorical_crossentropy', metrics = ['accuracy'])
+def showImg(img, name, method, i):
+    plt.subplot(2, 1, i)
+    plt.imshow(img)
+    plt.title(method + ": Result: " + name)
+    plt.axis("off")
 
-def training():
-    model.fit_generator(train_datagen,
-            epochs=1,
-            steps_per_epoch=2753//32)
+def try_predictors(data_knn, y_knn_pred, svm, data, data_test, classes, k):
+    x_ = randint(0, data_knn.shape[0])
+    showImg(data_knn[x_], y_knn_pred[x_], "K Nearest Neighbors (k = {})".format(k), 1)
+    
+    x_ = randint(0, data_test.shape[0])
+    img = data[x_]
+    result = int(svm.predict(data_test[x_].reshape(1,192))[1][0][0])
+    result = classes[result]
+    showImg(img, result, "Support Vector Machine" , 2)
 
+    plt.show()
 
-html_temp_2 = '''
-    <div style = "padding-bottom: 20px; padding-top: 20px; padding-left: 20px; padding-right: 20px">      
-    <center><h2>Fruit Classifier</h2></center>
-    </div>
-    '''
-st.markdown(html_temp_2, unsafe_allow_html=True)
-st.set_option('deprecation.showfileUploaderEncoding', False)
-select = st.selectbox("Please select how you want to upload the image",("Please Select","Upload image via link","Upload image from device"))
-if select == "Upload image via link":
-    try:
-        img = st.text_input('Enter the Image Address')
-        img = Image.open(urllib.request.urlopen(img))
-    except:
-        if st.button('Submit'):
-            show = st.error("Please Enter a valid Image Address!")
-            time.sleep(4)
-            show.empty()
+def gui(results_knn_no, results_svm_no, results_knn_yes, results_svm_yes, classes, k):
+    root = tk.Tk()
+    root.geometry("400x300")
+    root.title("Fruit Classifier")
 
-if select == 'Upload image from device':
-    file = st.file_uploader('Select', type = ['jpg', 'png', 'jpeg'])
-    st.set_option('deprecation.showfileUploaderEncoding', False)
-    if file is not None:
-        img = Image.open(file)
+    l1 = tk.Label(root, text="Precission of KNN with no Preprocessing: {0:.2f}%".format(results_knn_no[0]))
+    l1.pack()
+    l2 = tk.Label(root, text="Precission of SVM with no Preprocessing: {0:.2f}%".format(results_svm_no[0]))
+    l2.pack()
+    button1 = tk.Button(root, text='Try Classifier - No Prepocessing',
+                        command=lambda: try_predictors(results_knn_no[1], results_knn_no[2], results_svm_no[3], results_svm_no[1], results_svm_no[2], classes, k))
+    button1.pack()
 
-try:
-    if img is not None:
-        st.image(img, width = 300, caption = 'Uploaded Image')
-        if st.button('Predict'):
-            img = np.array(img.resize((300, 300), Image.ANTIALIAS))
-            img = np.array(img, dtype='uint8')
-            img = np.array(img)/255.0
-            training()
-            prediction = model.predict(img[np.newaxis, ...])
-            predicted_class = class_names[np.argmax(prediction[0], axis=-1)]
-            st.success("Classified Class is : {}".format(predicted_class))
+    l3 = tk.Label(root, text="Precission of KNN with Prepocessing - thresholding: {0:.2f}%".format(results_knn_yes[0]))
+    l3.pack()
+    l4 = tk.Label(root, text="Precission of SVM with Prepocessing - thresholding: {0:.2f}%".format(results_svm_yes[0]))
+    l4.pack()
+    button2 = tk.Button(root, text='Try Classifier - Prepocessing: thresholding',
+                        command=lambda: try_predictors(results_knn_yes[1], results_knn_yes[2], results_svm_yes[3], results_svm_yes[1], results_svm_yes[2], classes, k))
+    button2.pack()
 
-except:
-    pass
+    root.mainloop()
+
+if __name__ == '__main__':
+    k = 11
+    results_knn_no = run_knn(k, False)
+    results_svm_no, classes = run_svm(False)
+
+    results_knn_yes = run_knn(k, True)
+    results_svm_yes, classes = run_svm(True)
+
+    gui(results_knn_no, results_svm_no, results_knn_yes, results_svm_yes, classes, k)
